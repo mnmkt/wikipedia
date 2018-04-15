@@ -24,6 +24,12 @@ const Page = db.define('page', {
           page.urlTitle = page.title.replace(/\s+/g, '_').replace(/\W/g, '');
         }
       }
+    },
+    //virtual
+    getterMethods: {
+      route: function (){
+        return '/wiki/' + this.urlTitle;
+      }
     }
 });
 

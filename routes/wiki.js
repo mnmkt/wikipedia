@@ -6,8 +6,15 @@ const Page = models.Page;
 module.exports = router;
 
 //GET /wiki
-router.get('/', function(){
+router.get('/', function(req, res, next){
 
+  Page.findAll({})
+  .then(function (thePages){
+    res.render('index', {
+      pages: thePages
+    })
+  })
+  .catch(next);
 });
 
 //POST /wiki
@@ -18,9 +25,7 @@ router.post('/', function(req, res, next){
   .then(function (){
     res.redirect('/wiki');
   })
-  .catch(function (err){
-    next(err);
-  });
+  .catch(next);
 });
 
 //GET /wiki/add
@@ -39,7 +44,12 @@ router.get('/:urlTitle', function(req, res, next){
     }
   })
     .then(function (page){
-      console.log(page);
+      if (page === null) {
+        return next(new Error('That page was not found!'));
+      }
+      res.render('wikipage', {
+        page: page
+      })
     })
     .catch(next)
 });
