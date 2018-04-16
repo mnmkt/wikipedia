@@ -16,6 +16,22 @@ const Page = db.define('page', {
   },
   status: {
     type: Sequelize.ENUM('open', 'closed')
+  },
+  tags:{
+    type: Sequelize.ARRAY(Sequelize.TEXT),
+    set: function(value){
+
+      let arrayOfTags;
+
+      if (typeof value === 'string'){
+        arrayOfTags = value.split(',').map(function(s){
+          return s.trim();
+        });
+        this.setDataValue('tags', arrayOfTags);
+      } else {
+        this.setDataValue('tags', value);
+      }
+    }
   }
 }, {
     hooks: {
@@ -47,6 +63,29 @@ const User = db.define('user', {
     }
   }
 });
+
+
+// classMethods
+  Page.findByTag = function(tag){
+    return Page.findAll({
+      where: {
+        tags: {
+          $overlap: [tag]
+        }
+      }
+    });
+  }
+
+//instance Method
+  Page.prototype.findSimilar = function(){
+    return Page.findAll({
+      where: {
+        tags: {
+          $overlap: this.tags
+        }
+      }
+    });
+  }
 
 Page.belongsTo(User, { as: 'author' });
 

@@ -32,7 +32,8 @@ router.post('/', function(req, res, next){
       return Page.create({
         title: req.body.title,
         content: req.body.content,
-        status: req.body.status
+        status: req.body.status,
+        tags: req.body.tags
       }).then(function (createdPage){
           return createdPage.setAuthor(user);
       });
@@ -55,6 +56,18 @@ router.post('/', function(req, res, next){
 router.get('/add', function(req, res){
   res.render('addpage');
 });
+
+router.get('/search/:tag', function(req, res, next){
+
+  Page.findByTag(req.params.tag)
+    .then(function (pages){
+      res.render('index', {
+        pages: pages
+      })
+    })
+    .catch(next);
+})
+
 
 // ex) /wiki/Javascript
 router.get('/:urlTitle', function(req, res, next){
@@ -83,4 +96,14 @@ router.get('/:urlTitle', function(req, res, next){
 
     })
     .catch(next)
+});
+
+router.get('/:urlTitle/similar', function(req, res, next){
+
+  Page.findOne({
+    where: {
+      urlTitle: urlTitleOfAPage
+    }
+  })
+
 });
