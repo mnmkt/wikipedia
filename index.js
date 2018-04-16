@@ -8,7 +8,8 @@ const Page = models.Page;
 const User = models.User;
 
 const app = express();
-const wikiRouter = require('./routes/wiki'); //setting up subrouter
+const wikiRouter = require('./routes/wiki');
+const usersRouter = require('./routes/users'); //setting up subrouter
 
 app.engine('html', nunjucks.render);
 nunjucks.configure('views', {noCache:true});
@@ -34,15 +35,16 @@ app.use(function (err, req, res, next){
 
  //setting up subrouter
 app.use('/wiki', wikiRouter);
+app.use('/users', usersRouter);
 
 User.sync()
-  .then(function(){
-    return Page.sync();
-  })
-  .then(function(){
-    app.listen(3001, function(){
-      console.log('Server is listening on port 3001!');
+    .then(function(){
+      return Page.sync();
+    })
+    .then(function(){
+      app.listen(3001, function(){
+        console.log('Server is listening on port 3001!');
+      });
     });
-  });
 
 
